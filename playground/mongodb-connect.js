@@ -9,7 +9,7 @@ MongoClient.connect(
     console.log(`Connected to MongoDB server`);
 
     //client has to still access db
-    const db = client.db("TodoApp");
+    // const db = client.db("TodoApp");
     //insert to Todos collection
     // db.collection("Todos").insertOne(
     //   {
