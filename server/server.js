@@ -1,69 +1,34 @@
-var mongoose = require("mongoose");
+var express = require("express");
+var bodyParser = require("body-parser");
 
-mongoose.Promise = global.Promise;
-
-mongoose.connect("mongodb://localhost:27017/TodoApp");
+var { mongoose } = require("./db/mongoose");
+var { Todo } = require("./models/todo");
+var { User } = require("./models/user");
 
 //save new something
 //Mongoose schema/validators
-var Todo = mongoose.model("Todo", {
-  text: {
-    type: String,
-    required: true,
-    minlength: 1,
-    trim: true
-  },
-  completed: {
-    type: Boolean,
-    default: false
-  },
-  completedAt: {
-    type: Number,
-    default: null
-  }
+//  cd Program Files\MongoDB\Server\4.0\bin
+// mongod.exe --dbpath /Users/peter.kang/mongo-data
+
+var app = express();
+
+app.use(bodyParser.json());
+
+app.post("/todos", (req, res) => {
+  var todo = new Todo({
+    text: req.body.text
+  });
+
+  todo.save().then(
+    doc => {
+      res.send(doc);
+    },
+    err => {
+      res.status(400).send(err);
+    }
+  );
 });
 
-var User = mongoose.model("User", {
-  email: {
-    type: String,
-    require: true,
-    minlength: 1,
-    trim: true
-  }
+app.listen(3000, () => {
+  console.log(`Server started on Port: 3000`);
 });
-
-var newUser = new User({ email: "pedrotest@gmail.com" });
-newUser.save().then(
-  doc => {
-    console.log("User has been saved", doc);
-  },
-  err => {
-    console.log("Unable to save User");
-  }
-);
-
-// var newTodo = new Todo({ text: "Cook Dinner" });
-
-// newTodo.save().then(
-//   doc => {
-//     console.log(`Save Todo`, doc);
-//   },
-//   e => {
-//     console.log(`unable to save todo`);
-//   }
-// );
-
-//typecasting happens in mongoose
-
-// var nextTodo = new Todo({ text: "true" });
-
-// nextTodo.save().then(
-//   doc => {
-//     console.log("Todo Save", doc);
-//   },
-//   err => {
-//     console.log("Unable to Save Todo");
-//   }
-// );
-
-//new user model - authentication associated to todos - trim, required, type: string, minlength - 1
