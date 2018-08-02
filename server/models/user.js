@@ -29,7 +29,7 @@ var User = mongoose.model("User", {
     require: true,
     minlength: 6
   },
-  token: [
+  tokens: [
     {
       access: {
         type: String,
