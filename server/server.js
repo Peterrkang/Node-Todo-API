@@ -30,15 +30,13 @@ app.post("/todos", async (req, res) => {
   }
 });
 
-app.get("/todos", (req, res) => {
-  Todo.find().then(
-    doc => {
-      res.send({ doc });
-    },
-    err => {
-      res.status(400).send(err);
-    }
-  );
+app.get("/todos", async (req, res) => {
+  try {
+    const todos = await Todo.find();
+    res.send({ todos });
+  } catch (e) {
+    res.status(400).send(err);
+  }
 });
 
 app.get("/todos/:id", (req, res) => {
