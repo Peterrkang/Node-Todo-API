@@ -39,32 +39,28 @@ app.get("/todos", async (req, res) => {
   }
 });
 
-app.get("/todos/:id", (req, res) => {
+app.get("/todos/:id", async (req, res) => {
   const id = req.params.id;
   if (!ObjectID.isValid(id)) return res.status(404).send();
-  Todo.findById(id)
-    .then(todo => {
-      if (!todo) return console.log(`Todo not found`);
-      res.send({ todo });
-    })
-    .catch(err => {
-      res.status(400).send();
-    });
+  try {
+    const todo = await Todo.findById(id);
+    if (!todo) return res.status(404).send();
+    res.send({ todo });
+  } catch (e) {
+    res.status(400).send(e);
+  }
 });
 
-app.delete("/todos/:id", (req, res) => {
+app.delete("/todos/:id", async (req, res) => {
   var id = req.params.id;
-
   if (!ObjectID.isValid(id)) return res.status(404).send();
-
-  Todo.findByIdAndRemove(id)
-    .then(todo => {
-      if (!todo) return res.status(404).send();
-      res.send({ todo });
-    })
-    .catch(e => {
-      res.status(400).send();
-    });
+  try {
+    const todo = await Todo.findByIdAndRemove(id);
+    if (!todo) return res.status(404).send();
+    res.status(200).send({ todo });
+  } catch (e) {
+    res.status(400).send();
+  }
 });
 
 app.patch("/todos/:id", (req, res) => {
