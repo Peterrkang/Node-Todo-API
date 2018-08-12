@@ -63,7 +63,7 @@ app.delete("/todos/:id", async (req, res) => {
   }
 });
 
-app.patch("/todos/:id", (req, res) => {
+app.patch("/todos/:id", async (req, res) => {
   var id = req.params.id;
   var body = _.pick(req.body, ["text", "completed"]);
 
@@ -75,15 +75,17 @@ app.patch("/todos/:id", (req, res) => {
     body.completed = false;
     body.completedAt = null;
   }
-
-  Todo.findByIdAndUpdate(id, { $set: body }, { new: true })
-    .then(todo => {
-      if (!todo) return res.status(404).send();
-      return res.send({ todo });
-    })
-    .catch(e => {
-      res.status(400).send(e);
-    });
+  try {
+    const todo = await Todo.findByIdAndUpdate(
+      id,
+      { $set: body },
+      { new: true }
+    );
+    if (!todo) return res.status(404).send();
+    res.send({ todo });
+  } catch (e) {
+    res.status(400).send(e);
+  }
 });
 
 //POST /users
