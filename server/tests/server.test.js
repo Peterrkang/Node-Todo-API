@@ -1,29 +1,13 @@
 const expect = require("expect");
 const request = require("supertest");
-const { app } = require("./../server");
-const { Todo } = require("./../models/todo");
 const { ObjectID } = require("mongodb");
 
-const todos = [
-  {
-    _id: new ObjectID(),
-    text: "first test todo"
-  },
-  {
-    _id: new ObjectID(),
-    text: "second test todo",
-    completed: true,
-    completedAt: 333
-  }
-];
+const { app } = require("./../server");
+const { Todo } = require("./../models/todo");
+const { todos, populateTodos, users, populateUsers } = require("./seed/seed");
 
-beforeEach(done => {
-  Todo.remove({})
-    .then(() => {
-      return Todo.insertMany(todos);
-    })
-    .then(() => done());
-});
+beforeEach(populateUsers);
+beforeEach(populateTodos);
 
 describe("Post /todos", () => {
   it("should create a new todo", done => {
