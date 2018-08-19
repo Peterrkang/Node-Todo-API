@@ -1,8 +1,8 @@
-const { ObjectID } = require("mongodb");
-const jwt = require("jsonwebtoken");
+const { ObjectID } = require('mongodb');
+const jwt = require('jsonwebtoken');
 
-const { Todo } = require("./../../models/todo");
-const { User } = require("./../../models/user");
+const { Todo } = require('./../../models/todo');
+const { User } = require('./../../models/user');
 
 const userOneId = new ObjectID();
 const userTwoId = new ObjectID();
@@ -10,32 +10,32 @@ const userTwoId = new ObjectID();
 const users = [
   {
     _id: userOneId,
-    email: "pedro@example.com",
-    password: "password1!",
+    email: 'pedro@example.com',
+    password: 'password1!',
     tokens: [
       {
-        access: "auth",
+        access: 'auth',
         token: jwt
-          .sign({ _id: userOneId.toHexString(), access: "auth" }, "abc123")
+          .sign({ _id: userOneId.toHexString(), access: 'auth' }, 'abc123')
           .toString()
       }
     ]
   },
   {
     _id: userTwoId,
-    email: "peter@example.com",
-    password: "password2@"
+    email: 'peter@example.com',
+    password: 'password2@'
   }
 ];
 
 const todos = [
   {
     _id: new ObjectID(),
-    text: "first test todo"
+    text: 'first test todo'
   },
   {
     _id: new ObjectID(),
-    text: "second test todo",
+    text: 'second test todo',
     completed: true,
     completedAt: 333
   }
