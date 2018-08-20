@@ -20,9 +20,10 @@ const app = express();
 
 app.use(bodyParser.json());
 
-app.post('/todos', async (req, res) => {
+app.post('/todos', authenticate, async (req, res) => {
   const todo = new Todo({
-    text: req.body.text
+    text: req.body.text,
+    _creator: req.user._id
   });
   try {
     const doc = await todo.save();
@@ -32,20 +33,23 @@ app.post('/todos', async (req, res) => {
   }
 });
 
-app.get('/todos', async (req, res) => {
+app.get('/todos', authenticate, async (req, res) => {
   try {
-    const todos = await Todo.find();
+    const todos = await Todo.find({ _creator: req.user._id });
     res.send({ todos });
   } catch (e) {
     res.status(400).send(err);
   }
 });
 
-app.get('/todos/:id', async (req, res) => {
+app.get('/todos/:id', authenticate, async (req, res) => {
   const id = req.params.id;
   if (!ObjectID.isValid(id)) return res.status(404).send();
   try {
-    const todo = await Todo.findById(id);
+    const todo = await Todo.findOne({
+      _id: id,
+      _creator: req.user._id
+    });
     if (!todo) return res.status(404).send();
     res.send({ todo });
   } catch (e) {
@@ -53,11 +57,14 @@ app.get('/todos/:id', async (req, res) => {
   }
 });
 
-app.delete('/todos/:id', async (req, res) => {
+app.delete('/todos/:id', authenticate, async (req, res) => {
   var id = req.params.id;
   if (!ObjectID.isValid(id)) return res.status(404).send();
   try {
-    const todo = await Todo.findByIdAndRemove(id);
+    const todo = await Todo.findOneAndRemove({
+      _id: id,
+      _creator: req.user._id
+    });
     if (!todo) return res.status(404).send();
     res.status(200).send({ todo });
   } catch (e) {
@@ -65,7 +72,7 @@ app.delete('/todos/:id', async (req, res) => {
   }
 });
 
-app.patch('/todos/:id', async (req, res) => {
+app.patch('/todos/:id', authenticate, async (req, res) => {
   var id = req.params.id;
   var body = _.pick(req.body, ['text', 'completed']);
 
@@ -78,8 +85,11 @@ app.patch('/todos/:id', async (req, res) => {
     body.completedAt = null;
   }
   try {
-    const todo = await Todo.findByIdAndUpdate(
-      id,
+    const todo = await Todo.findOneAndUpdate(
+      {
+        _id: id,
+        _creator: req.user._id
+      },
       { $set: body },
       { new: true }
     );
